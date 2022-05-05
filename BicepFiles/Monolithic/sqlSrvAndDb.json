@@ -1,0 +1,109 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.4.1272.37030",
+      "templateHash": "5952689567513731016"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    },
+    "sqlServerName": {
+      "type": "string"
+    },
+    "createNewServer": {
+      "type": "bool",
+      "defaultValue": false
+    },
+    "allowedPublicIpAddresses": {
+      "type": "string"
+    },
+    "administratorLogin": {
+      "type": "string"
+    },
+    "administratorLoginPassword": {
+      "type": "secureString"
+    },
+    "environment": {
+      "type": "string",
+      "metadata": {
+        "description": "target environment"
+      },
+      "allowedValues": [
+        "TEST",
+        "PROD"
+      ]
+    },
+    "databaseName": {
+      "type": "string"
+    },
+    "collation": {
+      "type": "string",
+      "defaultValue": "SQL_Latin1_General_CP1_CI_AS"
+    }
+  },
+  "variables": {
+    "ipAddressList": "[split(parameters('allowedPublicIpAddresses'), ',')]"
+  },
+  "resources": [
+    {
+      "condition": "[parameters('createNewServer')]",
+      "type": "Microsoft.Sql/servers",
+      "apiVersion": "2014-04-01",
+      "name": "[parameters('sqlServerName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "administratorLogin": "[parameters('administratorLogin')]",
+        "administratorLoginPassword": "[parameters('administratorLoginPassword')]"
+      }
+    },
+    {
+      "copy": {
+        "name": "fwRule",
+        "count": "[length(variables('ipAddressList'))]"
+      },
+      "type": "Microsoft.Sql/servers/firewallRules",
+      "apiVersion": "2014-04-01",
+      "name": "[format('{0}/allow_{1}', parameters('sqlServerName'), variables('ipAddressList')[copyIndex()])]",
+      "properties": {
+        "startIpAddress": "[variables('ipAddressList')[copyIndex()]]",
+        "endIpAddress": "[variables('ipAddressList')[copyIndex()]]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Sql/servers/firewallRules",
+      "apiVersion": "2014-04-01",
+      "name": "[format('{0}/allow_AzureSvcs', parameters('sqlServerName'))]",
+      "properties": {
+        "startIpAddress": "0.0.0.0",
+        "endIpAddress": "255.255.255.255"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Sql/servers/databases",
+      "apiVersion": "2019-06-01-preview",
+      "name": "[format('{0}/{1}', parameters('sqlServerName'), parameters('databaseName'))]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "[if(equals(parameters('environment'), 'TEST'), 'S0', 'S3')]"
+      },
+      "properties": {
+        "collation": "[parameters('collation')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+      ]
+    }
+  ]
+}

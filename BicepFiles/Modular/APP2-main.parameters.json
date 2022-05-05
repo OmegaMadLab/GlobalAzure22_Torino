@@ -1,0 +1,30 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "value": "Sweden Central" 
+        },
+        "sqlServerName": {
+            "value": "datasatpn2022-omegamadlab"
+        },
+        "createNewServer": {
+            "value": false
+        },
+        "administratorLogin": {
+            "value": "omegamadlab" 
+        },
+        "administratorLoginPassword": {
+            "value": "Passw0rd.12345" 
+        },
+        "environment": {
+            "value": "TEST" 
+        },
+        "databaseNameList": {
+            "value": "DataSatPN_2022_DemoDB_App2_DB1,DataSatPN_2022_DemoDB_App2_DB2" 
+        },
+        "collation": {
+            "value": "SQL_Latin1_General_CP1_CI_AS"
+        }
+    }
+}

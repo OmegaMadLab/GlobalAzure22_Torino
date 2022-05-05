@@ -1,0 +1,128 @@
+name: sqlDb_complex
+
+on: 
+ push:
+
+env:
+  BICEP_FILE: './BicepFiles/Modular_BicepRegistry/APP1-main-noAlias.bicep'
+  PARAMETER_FILE_DEV: './BicepFiles/Modular_BicepRegistry/APP1-DEV.parameters.json'
+  PARAMETER_FILE_PROD: './BicepFiles/Modular_BicepRegistry/APP1-PROD.parameters.json'
+  AZURE_RESOURCEGROUP_NAME_DEV: 'DataSatPN_2022_Demo_DEV'
+  AZURE_RESOURCEGROUP_NAME_PROD: 'DataSatPN_2022_Demo_PROD'
+
+jobs:
+
+  buildIaC:
+    name: Build the infrastructure
+    runs-on: ubuntu-20.04
+    steps:
+    # Checks out a copy of the repo on a ubuntu-20.04 runner
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Login to Azure - can be placed below if validation is executed via Bicep build or related Action
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZCRED_DEV }}
+    
+    # Transpile bicep and check for errors
+
+    # Option 1 - Build with Az CLI and ensure transpilation and linting
+    # - name: Build ARM Template from bicep file and validate it
+    #   run: |
+    #   az bicep build --file ${{ env.BICEP_FILE }}
+    
+    # Option 2 - Build with an Action and ensure transpilation and linting
+    # - name: Build ARM Template from bicep file and validate it
+    #   uses: Azure/bicep-build-action@v1.0.0
+    #   with:
+    #     bicepFilePath: ${{ env.BICEP_FILE }}
+    #     outputFilePath: azuredeploy.json
+
+    # Option 3 - Simulate a deployment with Az CLI and ensure transpilation, linting and pre-flight checks
+    
+    - name: Build ARM Template from bicep file and validate it versus DEV environment
+      run: |
+        az deployment group validate \
+          --name '${{ github.run_number }}' \
+          --resource-group '${{ env.AZURE_RESOURCEGROUP_NAME_DEV }}' \
+          --template-file '${{ env.BICEP_FILE }}' \
+          --parameters @${{ env.PARAMETER_FILE_DEV }}
+
+  deployDev:
+    name: Deploy to DEV environment
+    if: github.ref == 'refs/heads/dev'
+    needs: [buildIaC]
+    runs-on: ubuntu-20.04
+    steps:
+    # Checks out a copy of the repo on a ubuntu-20.04 runner
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Login to Azure
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZCRED_DEV }}
+
+    # Deploy the template on DEV
+    - name: Deploy template
+      uses: azure/arm-deploy@v1
+      with:
+        deploymentName: ${{ github.run_number }}
+        resourceGroupName: ${{ env.AZURE_RESOURCEGROUP_NAME_DEV }}
+        template: ${{ env.BICEP_FILE}}
+        parameters: ${{ env.PARAMETER_FILE_DEV }}
+
+  previewIaCProd:
+    name: Preview IaC changes in PROD
+    if: github.ref == 'refs/heads/main'
+    needs: [buildIaC]
+    runs-on: ubuntu-20.04
+    steps:
+    # Checks out a copy of the repo on a ubuntu-20.04 runner
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Login to Azure
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZCRED_PROD }}
+
+    # Preview changes with What-If deployment
+    - name: Preview changes to PROD environment
+      run: |
+        az deployment group what-if \
+          --name '${{ github.run_number }}' \
+          --resource-group '${{ env.AZURE_RESOURCEGROUP_NAME_PROD }}' \
+          --template-file '${{ env.BICEP_FILE }}' \
+          --parameters @${{ env.PARAMETER_FILE_DEV }}
+
+  deployProd:
+    name: Deploy to PROD environment
+    if: github.ref == 'refs/heads/main'
+    environment:
+      name: PROD
+    needs: [previewIaCProd]
+    runs-on: ubuntu-20.04
+    steps:
+    # Checks out a copy of the repo on a ubuntu-20.04 runner
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    # Login to Azure - can be placed below if validation is executed via Bicep build or related Action
+    - name: Azure login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZCRED_PROD }}
+
+    # Deploy the template on PROD
+    - name: Deploy template
+      uses: azure/arm-deploy@v1
+      with:
+        deploymentName: ${{ github.run_number }}
+        resourceGroupName: ${{ env.AZURE_RESOURCEGROUP_NAME_PROD }}
+        template: ${{ env.BICEP_FILE}}
+        parameters: ${{ env.PARAMETER_FILE_PROD }}
