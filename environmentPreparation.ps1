@@ -4,7 +4,7 @@ $location = "Sweden Central"
 
 # Create a RG for SQL resources
 
-$rgName = "DataSatPN_2022_Demo"
+$rgName = "GlobalAzure2022_TO_Demo"
 
 $rg = Get-AzResourceGroup -ResourceGroupName $rgName -ErrorAction SilentlyContinue
 
@@ -14,7 +14,7 @@ if(-not $rg) {
 
 # Create a RG for Bicep Registry and Template Spec
 
-$bcRgName = "DataSatPN_2022_Demo_BicepResources"
+$bcRgName = "GlobalAzure2022_TO_Demo_BicepResources"
 
 $bcRg = Get-AzResourceGroup -ResourceGroupName $bcRgName -ErrorAction SilentlyContinue
 
@@ -32,8 +32,8 @@ $reg = New-AzContainerRegistry -Name "acr$(Get-Random -Maximum 99999)" `
 $reg.Name
 
 # Create RGs for DEV and PROD env
-$devRg = New-AzResourceGroup -Name 'DataSatPN_2022_Demo_DEV' -location $location
-$prodRg = New-AzResourceGroup -Name 'DataSatPN_2022_Demo_PROD' -location $location
+$devRg = New-AzResourceGroup -Name 'GlobalAzure2022_TO_Demo_DEV' -location $location
+$prodRg = New-AzResourceGroup -Name 'GlobalAzure2022_TO_Demo_PROD' -location $location
 
 # Create a role for validating ARM deployment
 $role = Get-AzRoleDefinition -Name "Deployment validator" -ErrorAction SilentlyContinue
@@ -55,7 +55,7 @@ if (-not $role) {
 # Create a service principal and grant it contributor access on the DEV rg
 $azureContext = Get-AzContext
 $servicePrincipal = New-AzADServicePrincipal `
-    -DisplayName "DataSatPN-2022-DEV" `
+    -DisplayName "GlobalAzure2022_TO_DEV" `
     -Role "Contributor" `
     -Scope $devRg.ResourceId
 
@@ -82,7 +82,7 @@ $output | ConvertTo-Json | Set-Clipboard
 
 # Create a service principal and grant it access on the PROD rg
 $servicePrincipal = New-AzADServicePrincipal `
-    -DisplayName "DataSatPN-2022-PROD" `
+    -DisplayName "GlobalAzure2022_TO_PROD" `
     -Role "Contributor" `
     -Scope $prodRg.ResourceId
 
@@ -100,4 +100,4 @@ $output = @{
 
 $output | ConvertTo-Json
 $output | ConvertTo-Json | Set-Clipboard
-# Paste the content of the clipboard in a new GitHub secret called AzCreds_DEV
+# Paste the content of the clipboard in a new GitHub secret called AzCreds_PROD
