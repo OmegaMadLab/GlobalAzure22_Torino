@@ -1,6 +1,6 @@
 # Execute environmentPreparation.ps1 to deploy the target environment
 
-$rgName = "DataSatPN_2022_Demo"
+$rgName = "GlobalAzure2022_TO_Demo"
 $rg = Get-AzResourceGroup -ResourceGroupName $rgName -ErrorAction SilentlyContinue
 
 #region Monolithic approach
@@ -39,7 +39,7 @@ Get-AzResource -ResourceGroupName $rg.ResourceGroupName | Remove-AzResource -for
 #region with bicep registry
 
 # Push modules to the bicep registry
-$registry = Get-AzContainerRegistry -ResourceGroupName "DataSatPN_2022_Demo_BicepResources"
+$registry = Get-AzContainerRegistry -ResourceGroupName "GlobalAzure2022_TO_Demo_BicepResources"
 
 bicep publish ".\BicepFiles\Modular\modules\db-module.bicep" --target "br:$($registry.LoginServer)/modules/db-module:v1"
 bicep publish ".\BicepFiles\Modular\modules\sqlSrv-module.bicep" --target "br:$($registry.LoginServer)/modules/sqlsrv-module:v1"
@@ -69,7 +69,7 @@ Get-AzResource -ResourceGroupName $rg.ResourceGroupName | Remove-AzResource -for
 #region Template Spec
 
 # Create a template spec for APP1-main.bicep
-New-AzTemplateSpec -ResourceGroupName "DataSatPN_2022_Demo_BicepResources" `
+New-AzTemplateSpec -ResourceGroupName "GlobalAzure2022_TO_Demo_BicepResources" `
                 -Name "APP1" `
                 -Version "v1.0" `
                 -Description "APP1 Template" `

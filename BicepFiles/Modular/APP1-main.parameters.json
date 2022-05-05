@@ -6,7 +6,7 @@
             "value": "Sweden Central" 
         },
         "sqlServerName": {
-            "value": "datasatpn2022-omegamadlab"
+            "value": "globalazure2022-to-omegamadlab"
         },
         "createNewServer": {
             "value": true
@@ -27,7 +27,7 @@
             "value": "TEST" 
         },
         "databaseName": {
-            "value": "DataSatPN_2022_DemoDB_App1" 
+            "value": "GlobalAzure2022-TO-DemoDB_App1" 
         },
         "collation": {
             "value": "SQL_Latin1_General_CP1_CI_AS"
