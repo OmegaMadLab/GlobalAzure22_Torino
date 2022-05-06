@@ -1,8 +1,8 @@
 {
   "moduleAliases": {
     "br": {
-      "DataSatPN": {
-        "registry": "acr84090.azurecr.io",
+      "GlobalAzure2022To": {
+        "registry": "acr10018.azurecr.io",
         "modulePath": "modules"
       }
     }
