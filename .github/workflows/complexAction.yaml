@@ -4,7 +4,7 @@ on:
  push:
 
 env:
-  BICEP_FILE: './BicepFiles/Modular_BicepRegistry/APP1-main.bicep'
+  BICEP_FILE: './BicepFiles/Modular_BicepRegistry/APP1-main-noAlias.bicep'
   PARAMETER_FILE_DEV: './BicepFiles/Modular_BicepRegistry/APP1-DEV.parameters.json'
   PARAMETER_FILE_PROD: './BicepFiles/Modular_BicepRegistry/APP1-PROD.parameters.json'
   AZURE_RESOURCEGROUP_NAME_DEV: 'GlobalAzure2022_TO_Demo_DEV'
