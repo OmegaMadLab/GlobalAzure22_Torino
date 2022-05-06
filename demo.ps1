@@ -47,7 +47,7 @@ bicep publish ".\BicepFiles\Modular\modules\sqlSrv-fwRule-module.bicep" --target
 
 # Define an alias for the registry in bicepConfig.json
 [PsCustomObject]$bicepConfig = Get-Content ".\BicepFiles\Modular_BicepRegistry\bicepConfig.json" -Encoding UTF8 | ConvertFrom-Json 
-$bicepConfig.moduleAliases.br.DataSatPN.registry = $registry.LoginServer
+$bicepConfig.moduleAliases.br.GlobalAzure2022To.registry = $registry.LoginServer
 
 $bicepConfig
 

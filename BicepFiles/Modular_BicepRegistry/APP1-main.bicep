@@ -7,7 +7,7 @@ param administratorLogin string
 param administratorLoginPassword string
 
 // bicep registry pattern 'br:<acr_uri>/<path>/<module_name>:<tag>'
-module newSqlSrv 'br/DataSatPN:sqlsrv-module:v1' = if (createNewServer) {
+module newSqlSrv 'br/GlobalAzure2022To:sqlsrv-module:v1' = if (createNewServer) {
   name: sqlServerName
   params: {
     sqlServerName: sqlServerName
@@ -24,7 +24,7 @@ resource sqlSrv 'Microsoft.Sql/servers@2014-04-01' existing = {
 param allowedPublicIpAddresses string
 param enableAzSvcs bool
 
-module fwRulesModule 'br/DataSatPN:sqlsrv-fwrule-module:v1' = {
+module fwRulesModule 'br/GlobalAzure2022To:sqlsrv-fwrule-module:v1' = {
   name: 'fwRules'
   params: {
     allowedPublicIpAddresses: allowedPublicIpAddresses
@@ -43,7 +43,7 @@ param environment string
 param databaseName string
 param collation string = 'SQL_Latin1_General_CP1_CI_AS'
 
-module database 'br/DataSatPN:db-module:v1' = {
+module database 'br/GlobalAzure2022To:db-module:v1' = {
   name: databaseName
   params: {
     databaseName: databaseName
