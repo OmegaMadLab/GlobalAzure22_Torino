@@ -39,6 +39,7 @@ module database 'modules/db-module.bicep' = [for dbName in dbList: {
     collation: collation
     environment: environment
     location: location
-    sqlServerName: sqlSrv.name
+    sqlServerName: newSqlSrv.name
   }
 }]
+

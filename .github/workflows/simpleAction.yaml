@@ -9,7 +9,7 @@ on:
 #  push:
   
 env:
-    AZURE_RESOURCEGROUP_NAME: DataSatPN_2022_Demo_DEV
+    AZURE_RESOURCEGROUP_NAME: GlobalAzure2022_TO_Demo_DEV
 
 jobs:
   deploy:

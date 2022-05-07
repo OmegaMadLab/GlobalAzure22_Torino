@@ -24,7 +24,7 @@
             "value": "TEST" 
         },
         "databaseName": {
-            "value": "GlobalAzure2022_TO_DemoDB" 
+            "value": "GlobalAzure2022_TO_DemoDB2" 
         },
         "collation": {
             "value": "SQL_Latin1_General_CP1_CI_AS"
